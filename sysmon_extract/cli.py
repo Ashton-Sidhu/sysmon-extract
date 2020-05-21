@@ -39,6 +39,8 @@ def cli(input_file, header, event, log_column, event_column,
     SINGLE FILE is if you want the output data as a single file. WARNING: You must have memory large enough to support this.
     
     MASTER is the master url for your spark instance
+
+    START_UI starts the UI on port 8501
     """
 
     if start_ui:
@@ -56,7 +58,7 @@ def cli(input_file, header, event, log_column, event_column,
         extract(
             input_file,
             event,
-            output_file,
+            output_file=output_file,
             header=header,
             log_column=log_column,
             event_column=event_column,

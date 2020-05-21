@@ -6,14 +6,15 @@ VERSION = "1.0.0"
 pkgs = [
     "click",
     "openhunt",
-    "streamlit"
+    "streamlit",
+    "pandas",
 ]
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="sysmon-extract",
+    name="sysextract",
     url="https://github.com/Ashton-Sidhu/sysmon-extract",
     packages=find_packages(),
     author="Ashton Sidhu",

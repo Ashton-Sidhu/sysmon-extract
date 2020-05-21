@@ -95,7 +95,7 @@ def start_ui():
             extract(
                 up_file.strip(),
                 selection,
-                out_file,
+                ouput_file=out_file,
                 header=headers,
                 log_column=log_col,
                 event_column=event_col,

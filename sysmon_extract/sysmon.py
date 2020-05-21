@@ -1,13 +1,13 @@
 import itertools
-import numpy as np
-import os
-import click
-
-from pyspark.sql import SparkSession
-from pyspark.sql.utils import AnalysisException
-from openhunt import ossem
 from pathlib import Path
 from typing import Union
+
+import numpy as np
+import pandas as pd
+
+from openhunt import ossem
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.utils import AnalysisException
 
 
 def _create_spark_session(master: str) -> SparkSession:
@@ -33,7 +33,7 @@ def _create_spark_session(master: str) -> SparkSession:
     return spark
 
 
-def _get_rule_schema(df, event_column: str, *ids: str) -> list:
+def _get_rule_schema(df: DataFrame, event_column: str, *ids: str) -> list:
     """
     Identify the columns needed to extract data from sysmon.
 
@@ -93,9 +93,106 @@ def _get_file_format(filename: str) -> str:
     return file_type
 
 
-def extract(filename: str,
+def _get_df(spark: SparkSession, input_data: Union[str, pd.DataFrame, DataFrame], header: bool) -> DataFrame:
+    """
+    Returns a Spark Dataframe based on input.
+
+    str -> reads file
+    Pandas DataFrame -> converts it to SparkDf
+    SparkDf -> Do nothing.
+
+    Parameters
+    ----------
+    spark : SparkSession
+        Spark session
+
+    input_data : Union[str, pd.DataFrame, DataFrame]
+        Filename, Pandas DF, Spark DF
+
+    header: bool
+        For csvs, whether the first row contains column names.
+
+    Returns
+    -------
+    DataFrame
+        Spark DF
+    """
+
+    if isinstance(input_data, str):
+        file_format = _get_file_format(input_data)
+        filename = filename if "hdfs://" in filename else f"file:///{filename}"
+
+        if file_format == "csv" and header:
+            df = spark.read.format(file_format).option(
+                "header", "true").load(filename)
+        else:
+            df = spark.read.format(file_format).option(
+                "mode", "DROPMALFORMED").load(filename)
+
+    elif isinstance(input_data, pd.DataFrame):
+        df = spark.createDataFrame(input_data)
+
+    else:
+        df = input_data
+
+
+def _return_(as_spark_frame: bool, sysmon_df: DataFrame, as_pandas_frame: bool, single_file: bool, output_format: str, output_file: str):
+    """
+    Outputs the result as either a file or a frame.
+
+    Parameters
+    ----------
+    as_spark_frame : bool
+        Return a SparkDf
+
+    sysmon_df : bool
+        DataFrame
+
+    as_pandas_frame : bool
+        Return a PandasDf
+
+    single_file : bool
+        Return a single file
+
+    output_format : str
+        Output file format
+
+    output_file : str
+        Output file path
+
+    Returns
+    -------
+    pd.DataFrame, DataFrame
+        Nothing if write to file, Pandas Dataframe or Spark DataFrame
+    """
+
+    if as_spark_frame:
+        frame = sysmon_df
+    elif as_pandas_frame:
+        frame = sysmon_df.toPandas()
+    else:
+        frame = None
+
+        if single_file:
+            if output_format == "csv":
+                sysmon_df.coalesce(1).write.format(output_format).option(
+                    "header", "true").mode("overwrite").save(output_file)
+            else:
+                sysmon_df.coalesce(1).write.format(
+                    output_format).mode("overwrite").save(output_file)
+        else:
+            if output_format == "csv":
+                sysmon_df.write.format(output_format).option(
+                    "header", "true").mode("overwrite").save(output_file)
+            else:
+                sysmon_df.write.format(output_format).mode(
+                    "overwrite").save(output_file)
+    return frame
+
+
+def extract(input_data: Union[str, pd.DataFrame, DataFrame],
             event: Union[tuple, list],
-            output: str,
+            output_file="",
             header=True,
             log_column="",
             event_column="",
@@ -112,13 +209,13 @@ def extract(filename: str,
 
     Parameters
     ----------
-    filename : str
-        Input file name.
+    input_data : str, pd.DataFrame, DataFrame
+        Input file name or frames.
 
     event : Union[tuple, list]
         List of event ids to extract
 
-    output : str
+    output_file : str
         Output file
 
     header : bool
@@ -153,21 +250,19 @@ def extract(filename: str,
         Return extracted logs as a Pandas DF, by default False
     """
 
-    if not spark_session:
-        spark = _create_spark_session(master)
+    assert (output_file or as_spark_frame or as_pandas_frame), "Please provide an output format (output_file, as_spark_frame, as_pandas_frame."
 
-    file_format = _get_file_format(filename)
-    filename = filename if "hdfs://" in filename else f"file:///{filename}"
-    output = output if "hdfs://" in filename else f"file:///{output}"
-    output_format = _get_file_format(output)
+    if as_spark_frame and not spark_session:
+        raise ValueError(
+            "To return a Spark DataFrame, an existing SparkSession must be provided. Please provide a SparkSession or output as a Pandas DataFrame or a file.")
+
+    spark = spark_session if spark_session else _create_spark_session(master)
+    df = _get_df(spark, input_data, header)
     event_column = event_column + "." if event_column else ""
 
-    if file_format == "csv" and header:
-        df = spark.read.format(file_format).option(
-            "header", "true").load(filename)
-    else:
-        df = spark.read.format(file_format).option(
-            "mode", "DROPMALFORMED").load(filename)
+    if output_file:
+        output_format = _get_file_format(output_file)
+        output_file = output_file if "hdfs://" in output_file else f"file:///{output_file}"
 
     df.registerTempTable("sysmon")
 
@@ -185,27 +280,14 @@ def extract(filename: str,
     # Release DataFrame from memory
     spark.catalog.dropTempView("sysmon")
 
-    if as_spark_frame:
-        frame = sysmon_df
-    elif as_pandas_frame:
-        frame = sysmon_df.toPandas()
-    else:
-        frame = None
-
-        if single_file:
-            if output_format == "csv":
-                sysmon_df.coalesce(1).write.format(output_format).option(
-                    "header", "true").mode("overwrite").save(output)
-            else:
-                sysmon_df.coalesce(1).write.format(
-                    output_format).mode("overwrite").save(output)
-        else:
-            if output_format == "csv":
-                sysmon_df.write.format(output_format).option(
-                    "header", "true").mode("overwrite").save(output)
-            else:
-                sysmon_df.write.format(output_format).mode(
-                    "overwrite").save(output)
+    frame = _return_(
+        as_spark_frame,
+        sysmon_df,
+        as_pandas_frame,
+        single_file,
+        output_format,
+        output_file
+    )
 
     # Stop SparkContext
     if not spark_session:
