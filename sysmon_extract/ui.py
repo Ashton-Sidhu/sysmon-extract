@@ -1,12 +1,39 @@
 import streamlit as st
 import re
 import os
+import pandas as pd
 
 from sysmon_extract.sysmon import extract
 from openhunt import ossem
 
-EVENT_DICTIONARY = list(map(str, range(1, 23)))
+EVENT_DICTIONARY = list(map(str, range(1, 24)))
 
+@st.cache(suppress_st_warning=True, persist=True)
+def _get_sysmon_schema():
+
+    cols = ["Event", "Event Description"]
+    df = pd.DataFrame()
+
+    for index,event in enumerate(EVENT_DICTIONARY):
+        rule_df = ossem.getEventDf("windows", "sysmon", f"event-{event}")
+
+        df = df.append(rule_df[["event_code", "title"]].iloc[:1,], sort=False)
+
+    df = df.rename(columns={
+        "event_code": "Event",
+        "title": "Event Title"
+    })
+
+    return df
+
+SYSMON_SCHEMA = _get_sysmon_schema()
+
+def _format_rules(label):
+
+    lookup_dict = dict(zip(SYSMON_SCHEMA["Event"], SYSMON_SCHEMA["Event Title"]))
+
+    return label + " - " + lookup_dict[label]
+    
 def start_ui():
 
     st.title("Sysmon Extractor")
@@ -38,7 +65,8 @@ def start_ui():
 
     selection = st.multiselect(
         "Select events to extract",
-        EVENT_DICTIONARY
+        EVENT_DICTIONARY,
+        format_func=_format_rules
     )
 
     st.write("If you want to extract any other columns from the data, specify them below separated by a comma")
@@ -60,7 +88,7 @@ def start_ui():
 
         # Assign default values
         # master = "local" if not master else master
-        additional_cols = re.sub(r"\s+", "", additional_cols).split(",")
+        additional_cols = [] if not additional_cols else re.sub(r"\s+", "", additional_cols).split(",")
         out_file = f"{os.getcwd()}/sysmon-output.csv" if not out_file else out_file
 
         with st.spinner(text="Extracting logs..."):
@@ -79,10 +107,16 @@ def start_ui():
         st.success("Done!")
         st.balloons()
 
+    st.header("Event Mapping")
+    st.subheader("See what each event is.")
+
+    sysmon_df = SYSMON_SCHEMA.set_index("Event")
+    st.table(sysmon_df) 
+
     st.header("Event Dictionary Help")
     st.subheader("Display the schema information for each Sysmon rule")
 
-    event = st.selectbox("Select an event.", EVENT_DICTIONARY)
+    event = st.selectbox("Select an event.", EVENT_DICTIONARY, format_func=_format_rules)
 
     df = ossem.getEventDf("windows", "sysmon", f"event-{event}")
 

@@ -14,7 +14,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="sysmon-extract",
-    url="",
+    url="https://github.com/Ashton-Sidhu/sysmon-extract",
     packages=find_packages(),
     author="Ashton Sidhu",
     author_email="sidhuashton@gmail.com",
