@@ -4,17 +4,13 @@ Sysmon Extract is a library to extract events from the sysmon log type based off
 
 The library comes with a library, cli and UI.
 
-## Installation
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
 
-`pip install sysxtract`
-
-Since this library leverages Spark, specifically PySpark, you need to install it manually. This allows for version compatability when connecting to existing clusters.
-
-`pip install pyspark==$VERSION`.
-
-If you're going to use spark locally:
-
-`pip install pyspark`
+- [Usage](#usage)
+- [Installation](#installation)
+- [Feedback](#feedback)
 
 ## Usage
 
@@ -152,3 +148,19 @@ df = extract(
     as_pandas_frame=True
 )
 ```
+
+## Installation
+
+`pip install sysxtract`
+
+Since this library leverages Spark, specifically PySpark, you need to install it manually. This allows for version compatability when connecting to existing clusters.
+
+`pip install pyspark==$VERSION`.
+
+If you're going to use spark locally:
+
+`pip install pyspark`
+
+## Feedback
+
+I appreciate any feedback so if you have any feature requests or issues make an issue with the appropriate tag or futhermore, send me an email at sidhuashton@gmail.com
