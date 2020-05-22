@@ -9,8 +9,8 @@ from sysxtract.ui import start_ui
 @click.option("-i", "--input-file", type=click.Path(exists=True),)
 @click.option("-h", "--header", is_flag=True)
 @click.option("-e", "--event", multiple=True,)
-@click.option("-c", "--log-column", default="")
-@click.option("-ec", "--event-column", default="", show_default=True)
+@click.option("-lc", "--log-column", default="")
+@click.option("-ec", "--event-column", show_default=True)
 @click.option("-a", "--additional-columns", default=[], multiple=True)
 @click.option("-o", "--output-file",
               default=f"{os.getcwd()}/sysmon-output.csv", show_default=True)
