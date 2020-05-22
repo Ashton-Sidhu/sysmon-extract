@@ -20,49 +20,41 @@ If you're going to use spark locally:
 
 ### Command Line
 
+```
 Usage: sysxtract [OPTIONS]
 
 Options:
 
   -i, --input-file PATH
-
   -h, --header
-
   -e, --event TEXT
-
   -c, --log-column TEXT
-
   -ec, --event-column TEXT       [default: ]
-
   -a, --additional-columns TEXT
-
   -o, --output-file TEXT         [default: /home/sidhu/sysmon-extract/sysmon-output.csv]
-
   -s, --single-file
-
   -m, --master TEXT              [default: local]
-
   -ui, --start-ui
-
   --help                         Show this message and exit.
+```
 
 `sysxtract -i /media/sidhu/Seagate/empire_apt3_2019-05-14223117.json -e 1 -e 2 -c log_name -ec event_data -s -a host.name -o /home/sidhu/output.json`
 
 Let's break it down.
 
-Input file: -i /media/sidhu/Seagate/empire_apt3_2019-05-14223117.json
+*Input file:* -i /media/sidhu/Seagate/empire_apt3_2019-05-14223117.json
 
-Sysmon Events to extract: -e 1 -e 2
+*Sysmon Events to extract:* -e 1 -e 2
 
-Column in the dataset that describes the log source (Sysmon, Microsoft Security, Microsoft Audit, etc.): -c log_name
+*Column in the dataset that describes the log source (Sysmon, Microsoft Security, Microsoft Audit, etc.):* -c log_name
 
-Column in the dataset that contains the nested sysmon data (often event_data): -ec event_data
+*Column in the dataset that contains the nested sysmon data (often event_data):* -ec event_data
 
-Output as a single file: -s
+*Output as a single file:* -s
 
-Additional columns to extract: -a host.name
+*Additional columns to extract:* -a host.name
 
-Output file name: /home/sidhu/output.json
+*Output file name:* /home/sidhu/output.json
 
 ### UI
 
