@@ -57,7 +57,7 @@ Let's break it down.
 
 ### UI
 
-`sysextract -ui`
+`sysxtract -ui`
 
 ![Alt Text](docs/media/ui.gif)
 
