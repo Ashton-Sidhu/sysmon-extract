@@ -13,6 +13,7 @@ The library comes with a library, cli and UI.
   * [UI](#ui)
   * [Package](#package)
 - [Installation](#installation)
+- [Acknowledgements](#acknowledgements)
 - [Feedback](#feedback)
 
 ## Usage
@@ -163,6 +164,12 @@ Since this library leverages Spark, specifically PySpark, you need to install it
 If you're going to use spark locally:
 
 `pip install pyspark`
+
+## Acknowledgments
+
+Community credits go to:
+
+[@hunters-forge](https://github.com/hunters-forge) for their [openhunt library](https://github.com/hunters-forge/openhunt) library and schema documentation with OSSEM.
 
 ## Feedback
 
