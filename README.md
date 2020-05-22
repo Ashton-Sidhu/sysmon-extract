@@ -6,7 +6,7 @@ The library comes with a library, cli and UI.
 
 ## Installation
 
-`pip install sysextract`
+`pip install sysxtract`
 
 Since this library leverages Spark, specifically PySpark, you need to install it manually. This allows for version compatability when connecting to existing clusters.
 
@@ -20,32 +20,48 @@ If you're going to use spark locally:
 
 ### Command Line
 
-Usage: sysextract [OPTIONS]
+Usage: sysxtract [OPTIONS]
 
 Options:
+
   -i, --input-file PATH
+
   -h, --header
+
   -e, --event TEXT
+
   -c, --log-column TEXT
+
   -ec, --event-column TEXT       [default: ]
+
   -a, --additional-columns TEXT
-  -o, --output-file TEXT         [default: /home/sidhu/sysmon-extract/sysmon-
-                                 output.csv]
+
+  -o, --output-file TEXT         [default: /home/sidhu/sysmon-extract/sysmon-output.csv]
+
   -s, --single-file
+
   -m, --master TEXT              [default: local]
+
   -ui, --start-ui
+
   --help                         Show this message and exit.
 
-`sysextract -i /media/sidhu/Seagate/empire_apt3_2019-05-14223117.json -e 1 -e 2 -c log_name -ec event_data -s -a host.name -o /home/sidhu/output.json`
+`sysxtract -i /media/sidhu/Seagate/empire_apt3_2019-05-14223117.json -e 1 -e 2 -c log_name -ec event_data -s -a host.name -o /home/sidhu/output.json`
 
 Let's break it down.
 
 Input file: -i /media/sidhu/Seagate/empire_apt3_2019-05-14223117.json
+
 Sysmon Events to extract: -e 1 -e 2
+
 Column in the dataset that describes the log source (Sysmon, Microsoft Security, Microsoft Audit, etc.): -c log_name
+
 Column in the dataset that contains the nested sysmon data (often event_data): -ec event_data
+
 Output as a single file: -s
+
 Additional columns to extract: -a host.name
+
 Output file name: /home/sidhu/output.json
 
 ### UI
@@ -59,7 +75,7 @@ Output file name: /home/sidhu/output.json
 Using the example above:
 
 ```python
-from sysextract import extract
+from sysxtract import extract
 
 # Extract to a file
 extract(

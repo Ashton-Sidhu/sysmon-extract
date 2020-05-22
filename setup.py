@@ -14,7 +14,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="sysextract",
+    name="sysxtract",
     url="https://github.com/Ashton-Sidhu/sysmon-extract",
     packages=find_packages(),
     author="Ashton Sidhu",
@@ -32,5 +32,5 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    entry_points={"console_scripts": ["sysextract=sysmon_extract.cli:cli"]},
+    entry_points={"console_scripts": ["sysxtract=sysmon_extract.cli:cli"]},
 )

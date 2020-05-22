@@ -1,8 +1,8 @@
 import click
 import os
 
-from sysmon_extract.sysmon import extract
-from sysmon_extract.ui import start_ui
+from sysxtract.sysmon import extract
+from sysxtract.ui import start_ui
 
 
 @click.command()

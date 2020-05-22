@@ -10,4 +10,4 @@ RUN pip3 install pyspark==$PYSPARK_VER pyyaml
 
 EXPOSE 8501
 
-CMD streamlit run sysmon_extract/ui.py
+CMD streamlit run sysxtract/ui.py

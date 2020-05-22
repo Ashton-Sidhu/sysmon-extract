@@ -3,7 +3,7 @@ import re
 import os
 import pandas as pd
 
-from sysmon_extract.sysmon import extract
+from sysxtract.sysmon import extract
 from openhunt import ossem
 
 EVENT_DICTIONARY = list(map(str, range(1, 24)))
