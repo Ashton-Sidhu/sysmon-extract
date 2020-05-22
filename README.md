@@ -13,7 +13,7 @@ The library comes with a library, cli and UI.
   * [UI](#ui)
   * [Package](#package)
 - [Installation](#installation)
-- [Acknowledgements](#acknowledgements)
+- [Acknowledgements](#acknowledgments)
 - [Feedback](#feedback)
 
 ## Usage
