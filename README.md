@@ -9,6 +9,9 @@ The library comes with a library, cli and UI.
 ## Table of Contents
 
 - [Usage](#usage)
+  * [Command Line Interface](#command-line)
+  * [UI](#ui)
+  * [Package](#package)
 - [Installation](#installation)
 - [Feedback](#feedback)
 
